@@ -28,7 +28,7 @@ disableWebhooks: []
      sourceRepository: github.com/gardener/machine-controller-manager
      repository: docker.io/guydaich/machine-controller-manager
      tag: "0.22.0-aws-encrypted-volume"
-     version: 1.13.0
+     version: 0.13.3
 #   - name: pause-container
 #     sourceRepository: github.com/kubernetes/kubernetes/blob/master/build/pause/Dockerfile
 #     repository: gcr.io/google_containers/pause-amd64
