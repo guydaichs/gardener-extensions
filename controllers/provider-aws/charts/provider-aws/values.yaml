@@ -22,13 +22,13 @@ controllers:
 disableControllers: []
 disableWebhooks: []
 
-# imageVectorOverwrite: |
-#   images:
-#   - name: pause-container
-#     sourceRepository: github.com/kubernetes/kubernetes/blob/master/build/pause/Dockerfile
-#     repository: gcr.io/google_containers/pause-amd64
-#     tag: "3.0"
-#     version: 1.11.x
+ imageVectorOverwrite: |
+   images:
+   - name: machine-controller-manager
+     sourceRepository: github.com/gardener/machine-controller-manager
+     repository: docker.io/guydaich/machine-controller-manager
+     tag: "0.22.0-aws-encrypted-volume"
+     version: 1.13.0
 #   - name: pause-container
 #     sourceRepository: github.com/kubernetes/kubernetes/blob/master/build/pause/Dockerfile
 #     repository: gcr.io/google_containers/pause-amd64
