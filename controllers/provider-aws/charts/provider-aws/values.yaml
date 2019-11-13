@@ -1,6 +1,6 @@
 image:
   repository: eu.gcr.io/gardener-project/gardener/gardener-extension-hyper
-  tag: latest
+  tag: aws-encrypted-volume
   pullPolicy: IfNotPresent
 
 replicaCount: 1
