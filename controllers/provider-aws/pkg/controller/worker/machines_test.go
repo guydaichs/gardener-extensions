@@ -316,6 +316,12 @@ var _ = Describe("Machines", func() {
 									"volumeType": volumeType,
 								},
 							},
+							{
+								"ebs": map[string]interface{}{
+									"volumeSize": volumeSize,
+									"volumeType": volumeType,
+								},
+							},
 						},
 					}
 

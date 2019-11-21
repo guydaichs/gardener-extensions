@@ -160,6 +160,12 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 							"volumeType": pool.Volume.Type,
 						},
 					},
+					{
+						"ebs": map[string]interface{}{
+							"volumeSize": volumeSize,
+							"volumeType": pool.Volume.Type,
+						},
+					},
 				},
 			}
 
