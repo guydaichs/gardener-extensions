@@ -143,6 +143,26 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 			ebs["iops"] = *workerConfig.Volume.IOPS
 		}
 
+		blockDevices := make(map[string]interface{}, 0)
+		blockDevices["ebs"] = ebs
+		for _, vol := range pool.DataVolumes {
+			volumeSize, err := worker.DiskSize(vol.Size)
+			if err != nil {
+				return err
+			}
+			ebs := map[string]interface{}{
+				"volumeSize": volumeSize,
+			}
+			if vol.Type != nil {
+				ebs["volumeType"] = vol.Type
+			}
+			ebs["Encrypted"] = vol.Type
+			blockDevices[*vol.Name] = ebs
+		}
+
+		fmt.Println(fmt.Sprintf("=================== got volumes : %+v ===========", blockDevices))
+
+
 		for zoneIndex, zone := range pool.Zones {
 			nodesSubnet, err := awsapihelper.FindSubnetForPurposeAndZone(infrastructureStatus.VPC.Subnets, awsapi.PurposeNodes, zone)
 			if err != nil {
@@ -168,11 +188,12 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				"secret": map[string]interface{}{
 					"cloudConfig": string(pool.UserData),
 				},
-				"blockDevices": []map[string]interface{}{
-					{
-						"ebs": ebs,
-					},
-				},
+				"blockDevices": blockDevices,
+				//"blockDevices": []map[string]interface{}{
+				//	{
+				//		"ebs": ebs,
+				//	},
+				//},
 			}
 
 			var (

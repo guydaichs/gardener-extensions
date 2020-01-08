@@ -24,5 +24,5 @@ header_text "Install"
 LD_FLAGS="-w -X github.com/gardener/gardener-extensions/pkg/version.Version=$VERSION"
 
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on \
-    go install -mod=vendor -ldflags "$LD_FLAGS" \
+    go install -v -mod=vendor -ldflags "$LD_FLAGS" \
     "${CMD_TREES[@]}"

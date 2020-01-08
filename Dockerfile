@@ -14,6 +14,7 @@ ARG VERIFY=true
 WORKDIR /go/src/github.com/gardener/gardener-extensions
 COPY . .
 
+
 RUN make VERIFY=$VERIFY all
 
 #############      base                                     #############
