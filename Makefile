@@ -87,7 +87,7 @@ start-os-coreos:
 		-ldflags $(LD_FLAGS) \
 		./controllers/os-coreos/cmd/gardener-extension-os-coreos \
 		--ignore-operation-annotation=$(IGNORE_OPERATION_ANNOTATION) \
-		--leader-election=$(LEADER_ELECTION)
+		--leader-election=$(LEADEmR_ELECTION)
 
 .PHONY: start-os-suse-jeos
 start-os-suse-jeos:
