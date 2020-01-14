@@ -144,10 +144,6 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				}
 				disk["encrypted"] = vol.Encrypted
 				disk["name"] = vol.Name
-				//device := map[string]interface{}{
-				//	"deviceName" : vol.Name,
-				//	"ebs" : ebs,
-				//}
 				dataDisks = append(dataDisks, disk)
 			}
 
@@ -174,6 +170,8 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				},
 				"keyPairName": infrastructureStatus.KeyPairName,
 			}
+
+			fmt.Println("data disks: %+v, machineclass: %+v", dataDisks, machineClassSpec)
 
 			var (
 				deploymentName = fmt.Sprintf("%s-%s-%s", w.worker.Namespace, pool.Name, zone)
