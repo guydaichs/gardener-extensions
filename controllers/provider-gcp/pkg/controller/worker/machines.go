@@ -130,6 +130,27 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 			disk["type"] = *pool.Volume.Type
 		}
 
+		var disks []map[string]interface{}
+		disks = append(disks,  disk)
+
+		for _, vol := range pool.DataVolumes {
+			volumeSize, err := worker.DiskSize(vol.Size)
+			if err != nil {
+				return err
+			}
+			disk := map[string]interface{}{
+				"autoDelete": true,
+				"boot":       false,
+				"sizeGb":     volumeSize,
+				"type":       vol.Type,
+				"image":      machineImage,
+				"labels": map[string]interface{}{
+					"name": w.worker.Name,
+				},
+			}
+			disks = append(disks,  disk)
+		}
+
 		for zoneIndex, zone := range pool.Zones {
 			var disableExternalIP = false
 			if infrastructureStatus.Networks.VPC.CloudRouter != nil {
@@ -141,7 +162,7 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				"canIpForward":       true,
 				"deletionProtection": false,
 				"description":        fmt.Sprintf("Machine of Shoot %s created by machine-controller-manager.", w.worker.Name),
-				"disks":              []map[string]interface{}{disk},
+				"disks":              disks,
 				"labels": map[string]interface{}{
 					"name": w.worker.Name,
 				},

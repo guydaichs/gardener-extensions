@@ -119,6 +119,12 @@ type WorkerPool struct {
 	// Volume contains information about the root disks that should be used for this worker pool.
 	// +optional
 	Volume *Volume `json:"volume,omitempty"`
+	// DataVolumes contains a list of required additional disks to be attached to the vm
+	// +optional
+	DataVolumes []Volume `json:"dataVolumes,omitempty"`
+	// KubeletDataVolumeName contains the name of the dataVolume to attach and mount as the kubelet data volume
+	// +optional
+	KubeletDataVolumeName string `json:"kubeletDataVolumeName,omitempty"`
 	// Zones contains information about availability zones for this worker pool.
 	// +optional
 	Zones []string `json:"zones,omitempty"`
@@ -136,11 +142,17 @@ type MachineImage struct {
 
 // Volume contains information about the root disks that should be used for worker pools.
 type Volume struct {
-	// Type is the type of the volume.
+	// Name of the device to make it referencable
+	// +optional
+	Name *string `json:"name,omitempty"`
+	// Type is the machine type of the worker group.
 	// +optional
 	Type *string `json:"type,omitempty"`
-	// Size is the size of the volume.
+	// Size is the size of the root volume.
 	Size string `json:"size"`
+	// Encrypted controls wether the device will be iaas-encrypted, not supported for root devices
+	// +optional
+	Encrypted bool `json:"encrypted,omitempty"`
 }
 
 // WorkerStatus is the status for a Worker resource.

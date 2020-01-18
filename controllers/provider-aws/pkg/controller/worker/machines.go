@@ -142,6 +142,35 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 		if workerConfig.Volume != nil && workerConfig.Volume.IOPS != nil {
 			ebs["iops"] = *workerConfig.Volume.IOPS
 		}
+		ebs["deleteOnTermination"] = true
+
+		rootDevice := map[string]interface{}{
+			"deviceName" : "/root",
+			"ebs" : ebs,
+		}
+
+		var blockDevices []map[string]interface{}
+		blockDevices = append(blockDevices,  rootDevice)
+
+		for _, vol := range pool.DataVolumes {
+			volumeSize, err := worker.DiskSize(vol.Size)
+			if err != nil {
+				return err
+			}
+			ebs := map[string]interface{}{
+				"volumeSize": volumeSize,
+			}
+			if vol.Type != nil {
+				ebs["volumeType"] = vol.Type
+			}
+			ebs["encrypted"] = vol.Encrypted
+			ebs["deleteOnTermination"] = true
+			device := map[string]interface{}{
+				"deviceName" : vol.Name,
+				"ebs" : ebs,
+			}
+			blockDevices = append(blockDevices, device)
+		}
 
 		for zoneIndex, zone := range pool.Zones {
 			nodesSubnet, err := awsapihelper.FindSubnetForPurposeAndZone(infrastructureStatus.VPC.Subnets, awsapi.PurposeNodes, zone)
@@ -168,11 +197,12 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				"secret": map[string]interface{}{
 					"cloudConfig": string(pool.UserData),
 				},
-				"blockDevices": []map[string]interface{}{
-					{
-						"ebs": ebs,
-					},
-				},
+				"blockDevices": blockDevices,
+				//"blockDevices": []map[string]interface{}{
+				//	{
+				//		"ebs": ebs,
+				//	},
+				//},
 			}
 
 			var (

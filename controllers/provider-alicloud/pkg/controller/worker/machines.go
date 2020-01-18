@@ -130,6 +130,23 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				systemDisk["category"] = *pool.Volume.Type
 			}
 
+			var dataDisks []map[string]interface{}
+			for _, vol := range pool.DataVolumes {
+				volumeSize, err := worker.DiskSize(vol.Size)
+				if err != nil {
+					return err
+				}
+				disk := map[string]interface{}{
+					"size": volumeSize,
+				}
+				if vol.Type != nil {
+					disk["category"] = vol.Type
+				}
+				disk["encrypted"] = vol.Encrypted
+				disk["name"] = vol.Name
+				dataDisks = append(dataDisks, disk)
+			}
+
 			machineClassSpec := map[string]interface{}{
 				"imageID":                 machineImageID,
 				"instanceType":            pool.MachineType,
@@ -138,6 +155,7 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				"securityGroupID":         nodesSecurityGroup.ID,
 				"vSwitchID":               nodesVSwitch.ID,
 				"systemDisk":              systemDisk,
+				"dataDisks":               dataDisks,
 				"instanceChargeType":      "PostPaid",
 				"internetChargeType":      "PayByTraffic",
 				"internetMaxBandwidthIn":  5,
@@ -152,6 +170,8 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				},
 				"keyPairName": infrastructureStatus.KeyPairName,
 			}
+
+			fmt.Println("data disks: %+v, machineclass: %+v", dataDisks, machineClassSpec)
 
 			var (
 				deploymentName = fmt.Sprintf("%s-%s-%s", w.worker.Namespace, pool.Name, zone)

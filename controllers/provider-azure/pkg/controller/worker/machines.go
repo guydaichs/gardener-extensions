@@ -148,6 +148,24 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 			}
 		}
 
+		var dataDisks []map[string]interface{}
+		for _, vol := range pool.DataVolumes {
+			volumeSize, err := worker.DiskSize(vol.Size)
+			if err != nil {
+				return err
+			}
+			disk := map[string]interface{}{
+				"size": volumeSize,
+			}
+			if vol.Type != nil {
+				disk["type"] = vol.Type
+			}
+			disk["encrypted"] = vol.Encrypted
+			disk["name"] = vol.Name
+			dataDisks = append(dataDisks, disk)
+		}
+
+
 		image := map[string]interface{}{
 			"urn": *urn,
 		}
@@ -180,6 +198,7 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 					"machineType":  pool.MachineType,
 					"image":        image,
 					"osDisk":       osDisk,
+					"dataDisks":    dataDisks,
 					"sshPublicKey": string(w.worker.Spec.SSHPublicKey),
 				}
 			)
