@@ -30,6 +30,8 @@ spec:
   systemDisk:
     category: {{ $machineClass.systemDisk.category }}
     size: {{ $machineClass.systemDisk.size }}
+  dataDisks:
+{{ toYaml $machineClass.dataDisks | indent 2 }}
   instanceChargeType: {{ $machineClass.instanceChargeType }}
   internetChargeType: {{ $machineClass.internetChargeType }}
   internetMaxBandwidthIn: {{ $machineClass.internetMaxBandwidthIn }}

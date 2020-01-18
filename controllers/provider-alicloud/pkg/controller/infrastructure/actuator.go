@@ -333,7 +333,12 @@ func (a *actuator) shareCustomizedImages(ctx context.Context, infra *extensionsv
 
 	a.logger.Info("Sharing customized image with Shoot's Alicloud account from Seed", "infrastructure", infra.Name)
 	for _, worker := range cluster.Shoot.Spec.Provider.Workers {
+<<<<<<< HEAD
 		imageID, err := helper.FindImageForRegionFromCloudProfile(cloudProfileConfig, worker.Machine.Image.Name, worker.Machine.Image.Version, infra.Spec.Region)
+=======
+		imageID, err := confighelper.FindImageForRegion(a.machineImageMapping, worker.Machine.Image.Name, worker.Machine.Image.Version, infra.Spec.Region)
+		a.logger.Info("Sharing customized image with Shoot's Alicloud account from Seed", "infrastructure", infra.Name)
+>>>>>>> f8e83cda... Add Data Volumes to AWS, GCP, AliCloud and Azure
 		if err != nil {
 			if providerStatus := infra.Status.ProviderStatus; providerStatus != nil {
 				infrastructureStatus := &apisalicloud.InfrastructureStatus{}
