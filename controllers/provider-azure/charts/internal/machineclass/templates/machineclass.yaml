@@ -54,14 +54,7 @@ spec:
         {{- end }}
         createOption: FromImage
       dataDisks:
-{{- range $index, $dataDisk := $machineClass.dataDisks }}
-        caching: None
-        diskSizeGB: {{ $dataDisk.size }}
-          {{- if hasKey $dataDisk "type" }}
-        managedDisk:
-          storageAccountType: {{ $dataDisk.type }}
-          {{- end }}
-        createOption: FromImage
+{{ toYaml $machineClass.dataDisks | indent 6 }}
 {{- end }}
   resourceGroup: {{ $machineClass.resourceGroup }}
   secretRef:
