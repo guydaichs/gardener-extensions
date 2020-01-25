@@ -146,6 +146,7 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				}
 				disk["encrypted"] = vol.Encrypted
 				disk["name"] = vol.Name
+				disk["deleteWithInstance"] = true
 				dataDisks = append(dataDisks, disk)
 			}
 

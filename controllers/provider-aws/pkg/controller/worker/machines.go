@@ -134,7 +134,7 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 		
 		var blockDevices []map[string]interface{}
 
-		ebs, err := getEbsForVolume(pool.Volume)
+		ebs, err := getEbsForVolume(*pool.Volume)
 		if err != nil {
 			return err
 		}
@@ -154,7 +154,7 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 
 		// sort volumes for consistent device naming
 		sort.Slice(dataVolumes, func(i, j int) bool {
-			return dataVolumes[i].Name > dataVolumes[j].Name
+			return *dataVolumes[i].Name > *dataVolumes[j].Name
 		})
 
 		for i, vol := range dataVolumes {
@@ -237,8 +237,7 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 	return nil
 }
 
-
-func getEbsForVolume(volume *v1alpha1extensions.Volume) (map[string]interface{}, error) {
+func getEbsForVolume(volume v1alpha1extensions.Volume) (map[string]interface{}, error) {
 	volumeSize, err := worker.DiskSize(volume.Size)
 	if err != nil {
 		return nil, err
@@ -249,9 +248,9 @@ func getEbsForVolume(volume *v1alpha1extensions.Volume) (map[string]interface{},
 	if volume.Type != nil {
 		ebs["volumeType"] = *volume.Type
 	}
-	if volume.Encrypted != nil {
-		ebs["encrypted"] = volume.Encrypted
-	}
+	// default false
+	ebs["encrypted"] = volume.Encrypted
+	ebs["deleteOnTermination"] = true
 	return ebs, nil
 }
 
