@@ -134,6 +134,8 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 
 			var dataDisks []map[string]interface{}
 			for _, vol := range pool.DataVolumes {
+				volumeName := vol.Name
+				volumeType := vol.Type
 				volumeSize, err := worker.DiskSize(vol.Size)
 				if err != nil {
 					return err
@@ -142,10 +144,10 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 					"size": volumeSize,
 				}
 				if vol.Type != nil {
-					disk["category"] = vol.Type
+					disk["category"] = *volumeType
 				}
 				disk["encrypted"] = vol.Encrypted
-				disk["name"] = vol.Name
+				disk["name"] = *volumeName
 				disk["deleteWithInstance"] = true
 				dataDisks = append(dataDisks, disk)
 			}
@@ -173,8 +175,6 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 				},
 				"keyPairName": infrastructureStatus.KeyPairName,
 			}
-
-			fmt.Println("data disks: %+v, machineclass: %+v", dataDisks, machineClassSpec)
 
 			var (
 				deploymentName = fmt.Sprintf("%s-%s-%s", w.worker.Namespace, pool.Name, zone)

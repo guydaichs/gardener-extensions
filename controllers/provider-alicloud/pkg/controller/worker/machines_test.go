@@ -105,6 +105,8 @@ var _ = Describe("Machines", func() {
 
 				volumeType string
 				volumeSize int
+				nameVol1   string
+				nameVol2   string
 
 				namePool1           string
 				minPool1            int
@@ -160,6 +162,9 @@ var _ = Describe("Machines", func() {
 
 				volumeType = "normal"
 				volumeSize = 20
+
+				nameVol1 = "vol-1"
+				nameVol2 = "vol-2"
 
 				namePool1 = "pool-1"
 				minPool1 = 5
@@ -282,6 +287,20 @@ var _ = Describe("Machines", func() {
 									Type: &volumeType,
 									Size: fmt.Sprintf("%dGi", volumeSize),
 								},
+								DataVolumes: []extensionsv1alpha1.Volume{
+									{
+										Name: &nameVol1,
+										Type: &volumeType,
+										Size: fmt.Sprintf("%dGi", volumeSize),
+										Encrypted: true,
+									},
+									{
+										Name: &nameVol2,
+										Type: &volumeType,
+										Size: fmt.Sprintf("%dGi", volumeSize),
+										Encrypted: false,
+									},
+								},
 								Zones: []string{
 									zone1,
 									zone2,
@@ -331,6 +350,22 @@ var _ = Describe("Machines", func() {
 				)
 
 				BeforeEach(func() {
+					defaultDataDisks := []map[string]interface{}{
+						{
+							"size": volumeSize,
+							"category": volumeType,
+							"encrypted": true,
+							"name": nameVol1,
+							"deleteWithInstance": true,
+						},
+						{
+							"size": volumeSize,
+							"category": volumeType,
+							"encrypted": false,
+							"name": nameVol2,
+							"deleteWithInstance": true,
+						},
+					}
 					defaultMachineClass = map[string]interface{}{
 						"imageID":         machineImageID,
 						"instanceType":    machineType,
@@ -340,6 +375,7 @@ var _ = Describe("Machines", func() {
 							"category": volumeType,
 							"size":     volumeSize,
 						},
+						"dataDisks": defaultDataDisks,
 						"instanceChargeType":      instanceChargeType,
 						"internetChargeType":      internetChargeType,
 						"internetMaxBandwidthIn":  internetMaxBandwidthIn,

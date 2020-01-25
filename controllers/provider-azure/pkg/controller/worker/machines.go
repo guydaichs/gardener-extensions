@@ -157,7 +157,7 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 		if dataVolumes != nil {
 			// sort volumes for consistent lun numbering
 			sort.Slice(dataVolumes, func(i, j int) bool {
-				return dataVolumes[i].Name > dataVolumes[j].Name
+				return *dataVolumes[i].Name < *dataVolumes[j].Name
 			})
 
 			for i, vol := range dataVolumes {

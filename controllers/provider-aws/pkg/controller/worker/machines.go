@@ -17,9 +17,6 @@ package worker
 import (
 	"context"
 	"fmt"
-	"path/filepath"
-	"sort"
-
 	apisaws "github.com/gardener/gardener-extensions/controllers/provider-aws/pkg/apis/aws"
 	awsapi "github.com/gardener/gardener-extensions/controllers/provider-aws/pkg/apis/aws"
 	awsapihelper "github.com/gardener/gardener-extensions/controllers/provider-aws/pkg/apis/aws/helper"
@@ -28,6 +25,8 @@ import (
 	"github.com/gardener/gardener-extensions/pkg/controller/worker"
 	genericworkeractuator "github.com/gardener/gardener-extensions/pkg/controller/worker/genericactuator"
 	v1alpha1extensions "github.com/gardener/gardener/pkg/apis/extensions/v1alpha1"
+	"path/filepath"
+	"sort"
 
 	v1beta1constants "github.com/gardener/gardener/pkg/apis/core/v1beta1/constants"
 	machinev1alpha1 "github.com/gardener/machine-controller-manager/pkg/apis/machine/v1alpha1"
@@ -148,14 +147,13 @@ func (w *workerDelegate) generateMachineConfig(ctx context.Context) error {
 		if dataVolumes != nil {
 			// need to identify the root device if more than once device is attached
 			rootDevice["deviceName"] = "/root"
+			// sort volumes for consistent device naming
+			sort.Slice(dataVolumes, func(i, j int) bool {
+				return *dataVolumes[i].Name < *dataVolumes[j].Name
+			})
 		}
 
 		blockDevices = append(blockDevices, rootDevice)
-
-		// sort volumes for consistent device naming
-		sort.Slice(dataVolumes, func(i, j int) bool {
-			return *dataVolumes[i].Name > *dataVolumes[j].Name
-		})
 
 		for i, vol := range dataVolumes {
 			ebs, err := getEbsForVolume(vol)
